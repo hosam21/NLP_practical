@@ -79,6 +79,11 @@ class ModelLoader:
             max_df=0.95
         )
         
+        # Fit the vectorizer with a dummy document containing all features
+        # This ensures the vectorizer is properly fitted while maintaining the vocabulary
+        dummy_doc = ' '.join(self.feature_names)
+        self.vectorizer.fit([dummy_doc])
+        
         logger.info("Model loader initialized successfully")
 
     def predict(self, text: str) -> Dict[str, Any]:
