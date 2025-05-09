@@ -88,6 +88,9 @@ st.markdown("""
         border-radius: 5px;
         border: 1px solid #dee2e6;
         margin-top: 1rem;
+        color: #2c3e50;  /* Dark blue-gray color for better visibility */
+        font-size: 1.1rem;
+        line-height: 1.5;
     }
     .stButton>button {
         width: 100%;
