@@ -2,6 +2,7 @@ import numpy as np
 import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
 import logging
+import os
 from typing import Dict, Any
 
 # Set up logging
@@ -9,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class ModelLoader:
-    def __init__(self, model_dir: str, dataset_dir: str):
+    def __init__(self, model_dir: str = "models", dataset_dir: str = "dataset"):
         """
         Initialize the model loader with paths to model and dataset directories.
         
@@ -20,23 +21,54 @@ class ModelLoader:
         self.model_dir = model_dir
         self.dataset_dir = dataset_dir
         
+        # Verify directories exist
+        if not os.path.exists(model_dir):
+            raise FileNotFoundError(f"Model directory not found: {model_dir}")
+        if not os.path.exists(dataset_dir):
+            raise FileNotFoundError(f"Dataset directory not found: {dataset_dir}")
+        
         # Load models
         logger.info("Loading sentiment model...")
-        self.sentiment_model = joblib.load(f'{model_dir}/sentiment_svm_model.joblib')
+        sentiment_model_path = os.path.join(model_dir, "sentiment_svm_model.joblib")
+        if not os.path.exists(sentiment_model_path):
+            raise FileNotFoundError(f"Sentiment model not found: {sentiment_model_path}")
+        self.sentiment_model = joblib.load(sentiment_model_path)
         
         logger.info("Loading sarcasm model...")
-        self.sarcasm_model = joblib.load(f'{model_dir}/sarcasm_svm_model.joblib')
+        sarcasm_model_path = os.path.join(model_dir, "sarcasm_svm_model.joblib")
+        if not os.path.exists(sarcasm_model_path):
+            raise FileNotFoundError(f"Sarcasm model not found: {sarcasm_model_path}")
+        self.sarcasm_model = joblib.load(sarcasm_model_path)
         
         # Load label encoders
         logger.info("Loading label encoders...")
-        self.sentiment_encoder = joblib.load(f'{model_dir}/sentiment_label_encoder.joblib')
-        self.sarcasm_encoder = joblib.load(f'{model_dir}/sarcasm_label_encoder.joblib')
+        sentiment_encoder_path = os.path.join(model_dir, "sentiment_label_encoder.joblib")
+        sarcasm_encoder_path = os.path.join(model_dir, "sarcasm_label_encoder.joblib")
+        
+        if not os.path.exists(sentiment_encoder_path):
+            raise FileNotFoundError(f"Sentiment label encoder not found: {sentiment_encoder_path}")
+        if not os.path.exists(sarcasm_encoder_path):
+            raise FileNotFoundError(f"Sarcasm label encoder not found: {sarcasm_encoder_path}")
+            
+        self.sentiment_encoder = joblib.load(sentiment_encoder_path)
+        self.sarcasm_encoder = joblib.load(sarcasm_encoder_path)
         
         # Load feature names and class mappings
         logger.info("Loading feature names and class mappings...")
-        self.feature_names = np.load(f'{dataset_dir}/feature_names.npy', allow_pickle=True)
-        self.sentiment_classes = np.load(f'{dataset_dir}/sentiment_classes.npy', allow_pickle=True)
-        self.sarcasm_classes = np.load(f'{dataset_dir}/sarcasm_classes.npy', allow_pickle=True)
+        feature_names_path = os.path.join(dataset_dir, "feature_names.npy")
+        sentiment_classes_path = os.path.join(dataset_dir, "sentiment_classes.npy")
+        sarcasm_classes_path = os.path.join(dataset_dir, "sarcasm_classes.npy")
+        
+        if not os.path.exists(feature_names_path):
+            raise FileNotFoundError(f"Feature names not found: {feature_names_path}")
+        if not os.path.exists(sentiment_classes_path):
+            raise FileNotFoundError(f"Sentiment classes not found: {sentiment_classes_path}")
+        if not os.path.exists(sarcasm_classes_path):
+            raise FileNotFoundError(f"Sarcasm classes not found: {sarcasm_classes_path}")
+            
+        self.feature_names = np.load(feature_names_path, allow_pickle=True)
+        self.sentiment_classes = np.load(sentiment_classes_path, allow_pickle=True)
+        self.sarcasm_classes = np.load(sarcasm_classes_path, allow_pickle=True)
         
         # Initialize TF-IDF vectorizer
         logger.info("Initializing TF-IDF vectorizer...")
