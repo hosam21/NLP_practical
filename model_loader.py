@@ -24,10 +24,10 @@ class ModelLoader:
         
         # Load models
         logger.info("Loading sentiment model...")
-        self.sentiment_model = load_model(f'{model_dir}/sentiment_dl_model.keras')
+        self.sentiment_model = load_model(f'{model_dir}/sentiment_svm_model.joblib')
         
         logger.info("Loading sarcasm model...")
-        self.sarcasm_model = load_model(f'{model_dir}/sarcasm_dl_model.keras')
+        self.sarcasm_model = load_model(f'{model_dir}/sarcasm_svm_model.joblib')
         
         # Load label encoders
         logger.info("Loading label encoders...")
