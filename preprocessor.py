@@ -101,7 +101,7 @@ class ArabicTextPreprocessor:
         
         # Define sarcasm cues
         sarcasm_cues = {
-            "لا"و"هههه", "عيب", "يا سلام", "حقًا", "طبعًا", "طبعاً", "أيوه", "أها"
+            "لا","هههه", "عيب", "يا سلام", "حقًا", "طبعًا", "طبعاً", "أيوه", "أها"
         }
         
         # Build filtered stopwords
