@@ -70,15 +70,14 @@ class ModelLoader:
         self.sentiment_classes = np.load(sentiment_classes_path, allow_pickle=True)
         self.sarcasm_classes = np.load(sarcasm_classes_path, allow_pickle=True)
         
-        # Initialize TF-IDF vectorizer
+        # Initialize TF-IDF vectorizer with the same vocabulary as training
         logger.info("Initializing TF-IDF vectorizer...")
         self.vectorizer = TfidfVectorizer(
-            max_features=5000,
+            vocabulary=self.feature_names,
             ngram_range=(1, 2),
             min_df=2,
             max_df=0.95
         )
-        self.vectorizer.fit(self.feature_names)
         
         logger.info("Model loader initialized successfully")
 
