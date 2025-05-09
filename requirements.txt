@@ -6,8 +6,6 @@ emoji==2.10.1
 scipy==1.11.4 
 tensorflow>=2.16.1
 setuptools>=68.0.0
-pip install pip-chill
-pip-chill --no-version | xargs pip index versions
 streamlit==1.39.0
 transformers==4.41.1
 python-magic==0.4.27
