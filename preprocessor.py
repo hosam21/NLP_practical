@@ -9,9 +9,81 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class EmojiHandler:
-    def process_emojis(self, text: str) -> str:
-        """Process emojis in text"""
-        return emoji.replace_emoji(text, replace='')
+    def __init__(self):
+        # Define emoji sentiment mappings
+        self.positive_emojis = {
+            '😊': 'رمز تعبيري إيجابي',
+            '😄': 'رمز تعبيري إيجابي',
+            '😃': 'رمز تعبيري إيجابي',
+            '😀': 'رمز تعبيري إيجابي',
+            '😁': 'رمز تعبيري إيجابي',
+            '😆': 'رمز تعبيري إيجابي',
+            '😍': 'رمز تعبيري إيجابي',
+            '🥰': 'رمز تعبيري إيجابي',
+            '😘': 'رمز تعبيري إيجابي',
+            '❤️': 'رمز تعبيري إيجابي',
+            '👍': 'رمز تعبيري إيجابي',
+            '🙌': 'رمز تعبيري إيجابي',
+            '🎉': 'رمز تعبيري إيجابي',
+            '✨': 'رمز تعبيري إيجابي',
+            '🌟': 'رمز تعبيري إيجابي'
+        }
+
+        self.negative_emojis = {
+            '😞': 'رمز تعبيري سلبي',
+            '😔': 'رمز تعبيري سلبي',
+            '😟': 'رمز تعبيري سلبي',
+            '😕': 'رمز تعبيري سلبي',
+            '😣': 'رمز تعبيري سلبي',
+            '😖': 'رمز تعبيري سلبي',
+            '😫': 'رمز تعبيري سلبي',
+            '😩': 'رمز تعبيري سلبي',
+            '😢': 'رمز تعبيري سلبي',
+            '😭': 'رمز تعبيري سلبي',
+            '😤': 'رمز تعبيري سلبي',
+            '😠': 'رمز تعبيري سلبي',
+            '😡': 'رمز تعبيري سلبي',
+            '👎': 'رمز تعبيري سلبي',
+            '💔': 'رمز تعبيري سلبي'
+        }
+
+        self.sarcastic_emojis = {
+            '😏': 'رمز تعبيري ساخر',
+            '😒': 'رمز تعبيري ساخر',
+            '🙄': 'رمز تعبيري ساخر',
+            '😑': 'رمز تعبيري ساخر',
+            '😐': 'رمز تعبيري ساخر',
+            '🤔': 'رمز تعبيري ساخر',
+            '🤨': 'رمز تعبيري ساخر',
+            '😶': 'رمز تعبيري ساخر',
+            '😏': 'رمز تعبيري ساخر',
+            '😌': 'رمز تعبيري ساخر'
+        }
+
+        # Combine all emoji mappings
+        self.emoji_mappings = {**self.positive_emojis, **self.negative_emojis, **self.sarcastic_emojis}
+        logger.info(f"Initialized EmojiHandler with {len(self.emoji_mappings)} emoji mappings")
+
+    def process_emojis(self, text):
+        """Convert emojis to meaningful text representations"""
+        # First, get all emojis in the text
+        emojis = emoji.emoji_list(text)
+
+        if emojis:
+            logger.debug(f"Found {len(emojis)} emojis in text: {text}")
+
+        # Sort emojis by their position in reverse order to avoid position shifting
+        emojis.sort(key=lambda x: x['match_start'], reverse=True)
+
+        # Replace each emoji with its sentiment representation
+        for emoji_info in emojis:
+            emoji_char = emoji_info['emoji']
+            if emoji_char in self.emoji_mappings:
+                replacement = f" {self.emoji_mappings[emoji_char]} "
+                text = text[:emoji_info['match_start']] + replacement + text[emoji_info['match_end']:]
+                logger.debug(f"Replaced emoji {emoji_char} with {self.emoji_mappings[emoji_char]}")
+
+        return text
 
 class ArabicTextPreprocessor:
     def __init__(self, stopwords_path: str, sentiment_words_path: str):
