@@ -1,7 +1,5 @@
 import numpy as np
 import joblib
-import tensorflow as tf
-from tensorflow.keras.models import load_model
 from sklearn.feature_extraction.text import TfidfVectorizer
 import logging
 from typing import Dict, Any
@@ -24,10 +22,10 @@ class ModelLoader:
         
         # Load models
         logger.info("Loading sentiment model...")
-        self.sentiment_model = load_model(f'{model_dir}/sentiment_svm_model.joblib')
+        self.sentiment_model = joblib.load(f'{model_dir}/sentiment_svm_model.joblib')
         
         logger.info("Loading sarcasm model...")
-        self.sarcasm_model = load_model(f'{model_dir}/sarcasm_svm_model.joblib')
+        self.sarcasm_model = joblib.load(f'{model_dir}/sarcasm_svm_model.joblib')
         
         # Load label encoders
         logger.info("Loading label encoders...")
@@ -64,20 +62,19 @@ class ModelLoader:
         """
         # Transform text to TF-IDF features
         features = self.vectorizer.transform([text])
-        
-        # Convert to dense array and reshape for LSTM
         features_dense = features.toarray()
-        features_reshaped = features_dense.reshape(1, 1, features_dense.shape[1])
         
         # Get predictions
-        sentiment_pred = self.sentiment_model.predict(features_reshaped)
-        sarcasm_pred = self.sarcasm_model.predict(features_reshaped)
+        sentiment_pred = self.sentiment_model.predict_proba(features_dense)
+        sarcasm_pred = self.sarcasm_model.predict_proba(features_dense)
         
-        # Get class labels
-        sentiment_label = self.sentiment_classes[np.argmax(sentiment_pred)]
-        sarcasm_label = self.sarcasm_classes[np.argmax(sarcasm_pred)]
+        # Get class labels and probabilities
+        sentiment_idx = np.argmax(sentiment_pred)
+        sarcasm_idx = np.argmax(sarcasm_pred)
         
-        # Get probabilities
+        sentiment_label = self.sentiment_classes[sentiment_idx]
+        sarcasm_label = self.sarcasm_classes[sarcasm_idx]
+        
         sentiment_prob = np.max(sentiment_pred)
         sarcasm_prob = np.max(sarcasm_pred)
         
